@@ -1,20 +1,10 @@
-import sys
-import os
 import logging
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-# --- 1. PATH CORRECTION ---
-# This is a crucial step. It adds the root directory of your project to the Python path.
-# This allows this script to find and import the SentimentAgent from the 'agents' folder.
-# We go up two levels ('..') from the current file's directory (services/sentiment_service).
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.append(project_root)
-
 # --- 2. AGENT IMPORT ---
-# Now that the path is corrected, we can import the agent.
-from agents.sentiment_agent import SentimentAgent
+from sentiment_agent import SentimentAgent
 
 # --- 3. LOGGING & APP INITIALIZATION ---
 logging.basicConfig(level=logging.INFO)
