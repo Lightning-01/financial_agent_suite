@@ -8,6 +8,7 @@ import requests
 # Import all your agent classes
 from agents.data_retriever_agent import DataRetrieverAgent
 from agents.news_retriever_agent import NewsRetrieverAgent
+from agents.sentiment_agent import SentimentAgent
 from agents.summarizer_agent import SummarizerAgent
 from agents.charting_agent import ChartingAgent
 from agents.rule_based_engine import RuleBasedEngine
@@ -37,10 +38,11 @@ st.set_page_config(layout="wide", page_title="AI Financial Analyst Suite")
 # Use Streamlit's caching to load heavy models only once
 @st.cache_resource
 def load_ai_agents():
+    sentiment_agent = SentimentAgent()
     summarizer_agent = SummarizerAgent()
-    return summarizer_agent
+    return sentiment_agent, summarizer_agent
 
-summarizer_agent = load_ai_agents()
+sentiment_agent, summarizer_agent = load_ai_agents()
 
 # Instantiate the other, lighter agents
 data_agent = DataRetrieverAgent()
@@ -79,19 +81,8 @@ if st.button("Generate Report"):
 
             # Step 3: AI Analysis
             status.update(label="Analyzing sentiment...", state="running")
-            SENTIMENT_API_URL = "http://sentiment_service:8000/analyze"
-            sentiment_result = {}
-            try:
-                # The news_data dictionary is already in the format {"articles": [...]} that our API expects
-                response = requests.post(SENTIMENT_API_URL, json=news_data, timeout=30)
-                response.raise_for_status()  # This will raise an error for bad responses (like 404 or 500)
-                sentiment_result = response.json()
-            except requests.exceptions.RequestException as e:
-                st.error(f"Error connecting to Sentiment Analysis service: {e}")
-                # Provide a fallback error message so the app doesn't crash
-                sentiment_result = {"sentiment_label": "Error", "sentiment_score": 0.0, "note": "Could not connect to the analysis service."}
-
-            # The summarizer is still running locally for now
+            sentiment_result = sentiment_agent.run(news_data) 
+            
             status.update(label="Generating summary...", state="running")
             summary_result = summarizer_agent.run(news_data)
             status.update(label="AI analysis complete!", state="complete")
