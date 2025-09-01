@@ -1,22 +1,17 @@
 import logging
-import torch
-from transformers.pipelines import pipeline
+import os
+import requests
 
 logger = logging.getLogger(__name__)
+API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
+API_URL = "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6"
+HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 
 class SummarizerAgent:
-    """
-    Uses DistilBART to summarize news articles with a map-reduce strategy.
-    """
-    def __init__(self):
-        logger.info("SummarizerAgent: Initializing and loading DistilBART model...")
-        device = 0 if torch.cuda.is_available() else -1
-        self.summarizer_pipeline = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6", device=device)
-        logger.info("SummarizerAgent: Model loaded successfully.")
-
     def run(self, news_data: dict) -> dict:
         articles = news_data.get("articles", [])
-        if not articles: return {"summary": "No news content available to generate a summary."}
+        if not articles:
+            return {"summary": "No news content available to generate a summary."}
 
         texts_to_summarize = [
             (a.get('headline', '') or "") + ". " + (a.get('content', '') or "")
@@ -25,18 +20,18 @@ class SummarizerAgent:
         if not texts_to_summarize:
             return {"summary": "No article content available to generate a summary."}
 
-
-        # 1. Combine all text snippets into a single block of text
         combined_text = " ".join(texts_to_summarize)
-        
-        logger.info(f"SummarizerAgent: Starting single-pass summarization on combined text of {len(combined_text)} characters.")
+        logger.info(f"SummarizerAgent: Summarizing via Inference API...")
 
         try:
-            # 2. Perform a single summarization pass on the combined text
-            final_summary_list = self.summarizer_pipeline(
-                combined_text, max_length=250, min_length=50, truncation=True
-            )
-            return {"summary": final_summary_list[0]['summary_text']}
+            payload = {
+                "inputs": combined_text,
+                "parameters": {"min_length": 50, "max_length": 250}
+            }
+            response = requests.post(API_URL, headers=HEADERS, json=payload)
+            response.raise_for_status()
+            summary = response.json()[0]['summary_text']
+            return {"summary": summary}
         except Exception as e:
-            logger.error(f"SummarizerAgent: Error during summarization. Reason: {e}")
+            logger.error(f"SummarizerAgent API Error: {e}")
             return {"summary": "Error generating summary.", "error": str(e)}
