@@ -1,0 +1,17 @@
+# Core Streamlit App
+streamlit
+
+# Data Retrieval, Analysis, and Charting
+pandas
+numpy
+yfinance
+plotly
+thefuzz
+
+# AI Models (for the SummarizerAgent still running locally)
+transformers
+torch --index-url https://download.pytorch.org/whl/cpu
+
+# Utilities
+requests
+python-dotenv

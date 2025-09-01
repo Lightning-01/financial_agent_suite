@@ -1,0 +1,22 @@
+services:
+  # The FastAPI backend service
+  sentiment_service:
+    build: ./services/sentiment_service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./agents:/app/agents # Mount agents folder to be accessible
+
+  # The Streamlit frontend service
+  frontend:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./agents:/app/agents # Also mount agents folder here
+    depends_on:
+      - sentiment_service # Tells frontend to wait for the backend to start
+    environment:
+      - NEWSAPI_KEY=${NEWSAPI_KEY}
+      - GNEWS_API_KEY=${GNEWS_API_KEY}
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
