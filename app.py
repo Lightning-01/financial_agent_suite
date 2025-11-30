@@ -5,6 +5,11 @@ import logging
 from dotenv import load_dotenv
 import requests
 
+# --- 1. SETUP AND CONFIGURATION ---
+
+# Load API keys from your .env file
+load_dotenv()
+
 # Import all your agent classes
 from agents.data_retriever_agent import DataRetrieverAgent
 from agents.news_retriever_agent import NewsRetrieverAgent
@@ -14,10 +19,6 @@ from agents.charting_agent import ChartingAgent
 from agents.rule_based_engine import RuleBasedEngine
 from agents.interpretation_agent import InterpretationAgent
 
-# --- 1. SETUP AND CONFIGURATION ---
-
-# Load API keys from your .env file
-load_dotenv()
 
 # --- TEMPORARY DEBUGGING ---
 # print("--- Checking Loaded API Keys ---")

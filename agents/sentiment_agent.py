@@ -4,7 +4,8 @@ import requests
 
 logger = logging.getLogger(__name__)
 API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
-API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+# API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+API_URL = "https://router.huggingface.co/hf-inference/models/ProsusAI/finbert"
 HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 
 class SentimentAgent:
@@ -13,7 +14,7 @@ class SentimentAgent:
         if not articles:
             return {"sentiment_label": "Neutral", "sentiment_score": 0.0, "note": "No articles for analysis."}
         
-        texts_to_analyze = [a.get('content') or a.get('headline', '') for a in articles]
+        texts_to_analyze = [(a.get('content') or a.get('headline', '')) for a in articles]
         logger.info(f"SentimentAgent: Analyzing {len(texts_to_analyze)} articles via Inference API...")
         
         try:

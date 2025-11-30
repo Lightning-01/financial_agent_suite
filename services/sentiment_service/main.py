@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 # --- 2. AGENT IMPORT ---
-from sentiment_agent import SentimentAgent
+from agents.sentiment_agent import SentimentAgent
 
 # --- 3. LOGGING & APP INITIALIZATION ---
 logging.basicConfig(level=logging.INFO)
