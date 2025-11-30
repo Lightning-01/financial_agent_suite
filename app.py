@@ -5,6 +5,9 @@ import logging
 from dotenv import load_dotenv
 import requests
 
+for key, value in st.secrets.items():
+    os.environ[key] = str(value)
+
 # --- 1. SETUP AND CONFIGURATION ---
 
 # Load API keys from your .env file
